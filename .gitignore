@@ -1,0 +1,24 @@
+cat > .gitignore << 'EOF'
+# Rust build files
+/target
+Cargo.lock
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Ark own data
+.ark/
+
+# Environment files
+.env
+*.env
+
+# Log files
+*.log
+EOF
