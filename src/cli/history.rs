@@ -1,11 +1,15 @@
 use colored::Colorize;
-use crate::core::{repo, commit};
+use crate::core::{repo, commit, branch};
 
 pub fn run() {
     if !repo::is_initialized() {
         eprintln!("{}", "Error: Not an Ark repository. Run 'ark start' first.".red().bold());
         return;
     }
+
+    let current_branch = branch::get_current_branch();
+    println!("{} {}", "Branch:".dimmed(), current_branch.cyan().bold());
+    println!();
 
     let history = commit::load_history();
 
@@ -17,7 +21,6 @@ pub fn run() {
     println!("{}", "Ark History".bold().underline());
     println!();
 
-    // Show latest commits first
     for (index, id) in history.iter().rev().enumerate() {
         match commit::load_commit(id) {
             Ok(c) => {

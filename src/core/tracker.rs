@@ -2,6 +2,7 @@ use std::fs;
 use std::path::Path;
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use crate::core::branch;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FileStatus {
@@ -18,17 +19,17 @@ pub enum Status {
 }
 
 pub fn load_snapshot() -> HashMap<String, String> {
-    let snapshot_path = ".ark/snapshots/latest.json";
+    let current_branch = branch::get_current_branch();
+    let snapshot_path = format!(".ark/snapshots/{}.json", current_branch);
 
-    if !Path::new(snapshot_path).exists() {
+    if !Path::new(&snapshot_path).exists() {
         return HashMap::new();
     }
 
-    let content = fs::read_to_string(snapshot_path).unwrap_or_default();
+    let content = fs::read_to_string(&snapshot_path).unwrap_or_default();
     serde_json::from_str(&content).unwrap_or_default()
 }
 
-/// Build a fresh snapshot of current directory state
 pub fn build_snapshot() -> HashMap<String, String> {
     let mut files = HashMap::new();
     scan_dir(Path::new("."), &mut files);

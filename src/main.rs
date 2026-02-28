@@ -37,6 +37,13 @@ enum Commands {
     Scan,
     /// Show project info
     Info,
+    /// Manage branches
+    Branch {
+        /// Action: new, go, list, delete
+        action: String,
+        /// Branch name
+        name: Option<String>,
+    },
 }
 
 fn main() {
@@ -59,6 +66,9 @@ fn main() {
                 }
                 Err(e) => eprintln!("{}", e),
             }
+        }
+        Commands::Branch { action, name } => {
+            cli::branch::run(&action, name.as_deref());
         }
     }
 }

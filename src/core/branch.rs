@@ -32,15 +32,21 @@ pub fn create_branch(name: &str) -> Result<(), String> {
         return Err(format!("Branch '{}' already exists.", name));
     }
 
-    // New branch inherits current branch commits
+    // Copy current branch snapshot to new branch
+    // so new branch sees current state as baseline
     let current = get_current_branch();
-    let current_commits = load_branch(&current)
-        .map(|b| b.commit_ids)
-        .unwrap_or_default();
+    let current_snapshot = format!(".ark/snapshots/{}.json", current);
+    let new_snapshot = format!(".ark/snapshots/{}.json", name);
 
+    if Path::new(&current_snapshot).exists() {
+        fs::copy(&current_snapshot, &new_snapshot)
+            .map_err(|e| format!("Failed to copy snapshot: {}", e))?;
+    }
+
+    // New branch starts with empty commit history
     let branch = Branch {
         name: name.to_string(),
-        commit_ids: current_commits,
+        commit_ids: Vec::new(),
     };
 
     save_branch(&branch)

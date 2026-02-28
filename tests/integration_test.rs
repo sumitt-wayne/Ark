@@ -148,3 +148,62 @@ fn test_scan_clean_project() {
 
     cleanup(&dir);
 }
+
+#[test]
+fn test_branch_create_and_list() {
+    let dir = setup("branch_create");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["branch", "new", "feature"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("Branch created"));
+
+    let list_output = ark_cmd(&dir, &["branch", "list"]);
+    let list_stdout = String::from_utf8_lossy(&list_output.stdout);
+    assert!(list_stdout.contains("main"));
+    assert!(list_stdout.contains("feature"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_branch_switch() {
+    let dir = setup("branch_switch");
+
+    ark_cmd(&dir, &["start"]);
+    ark_cmd(&dir, &["branch", "new", "feature"]);
+
+    let output = ark_cmd(&dir, &["branch", "go", "feature"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("Switched to branch"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_branch_delete() {
+    let dir = setup("branch_delete");
+
+    ark_cmd(&dir, &["start"]);
+    ark_cmd(&dir, &["branch", "new", "temp"]);
+
+    let output = ark_cmd(&dir, &["branch", "delete", "temp"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("Branch deleted"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_cannot_delete_main() {
+    let dir = setup("branch_no_delete_main");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["branch", "delete", "main"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("Cannot delete"));
+
+    cleanup(&dir);
+}

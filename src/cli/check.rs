@@ -1,5 +1,5 @@
 use colored::Colorize;
-use crate::core::{repo, tracker};
+use crate::core::{repo, tracker, branch};
 use crate::core::tracker::Status;
 
 pub fn run() {
@@ -7,6 +7,10 @@ pub fn run() {
         eprintln!("{}", "Error: Not an Ark repository. Run 'ark start' first.".red().bold());
         return;
     }
+
+    let current_branch = branch::get_current_branch();
+    println!("{} {}", "Branch:".dimmed(), current_branch.cyan().bold());
+    println!();
 
     let changes = tracker::scan_changes();
 
