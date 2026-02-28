@@ -61,6 +61,7 @@ pub fn get_remote() -> Option<String> {
     }
 }
 
+#[allow(dead_code)]
 pub fn set_remote(url: &str) -> GitResult {
     run(&["remote", "add", "origin", url])
 }

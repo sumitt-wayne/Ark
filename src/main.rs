@@ -4,6 +4,7 @@ mod git;
 mod security;
 
 use clap::{Parser, Subcommand};
+use core::repo;
 
 #[derive(Parser)]
 #[command(
@@ -22,7 +23,6 @@ enum Commands {
     Start,
     /// Save your changes
     Save {
-        /// Optional commit message
         message: Option<String>,
     },
     /// Check current status
@@ -35,6 +35,8 @@ enum Commands {
     Undo,
     /// Scan for secrets
     Scan,
+    /// Show project info
+    Info,
 }
 
 fn main() {
@@ -48,5 +50,15 @@ fn main() {
         Commands::Sync => cli::sync::run(),
         Commands::Undo => cli::undo::run(),
         Commands::Scan => cli::scan::run(),
+        Commands::Info => {
+            match repo::load_config() {
+                Ok(config) => {
+                    println!("Project: {}", config.project_name);
+                    println!("Version: {}", config.version);
+                    println!("Created: {}", config.created_at);
+                }
+                Err(e) => eprintln!("{}", e),
+            }
+        }
     }
 }

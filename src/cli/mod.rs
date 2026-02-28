@@ -5,3 +5,4 @@ pub mod history;
 pub mod sync;
 pub mod undo;
 pub mod scan;
+pub mod branch;

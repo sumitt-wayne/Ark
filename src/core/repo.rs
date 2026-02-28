@@ -2,6 +2,7 @@ use std::fs;
 use std::path::Path;
 use serde::{Deserialize, Serialize};
 use chrono::Local;
+use crate::core::branch;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ArkConfig {
@@ -26,6 +27,15 @@ pub fn init(project_name: &str) -> Result<(), String> {
 
     fs::create_dir(".ark/snapshots")
         .map_err(|e| format!("Failed to create snapshots directory: {}", e))?;
+
+    fs::create_dir(".ark/branches")
+        .map_err(|e| format!("Failed to create branches directory: {}", e))?;
+
+    // Create default main branch
+    branch::create_branch("main")?;
+
+    // Set HEAD to main
+    branch::set_current_branch("main")?;
 
     let config = ArkConfig {
         version: "0.1.0".to_string(),
