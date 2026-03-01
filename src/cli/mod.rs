@@ -6,3 +6,4 @@ pub mod sync;
 pub mod undo;
 pub mod scan;
 pub mod branch;
+pub mod ai;

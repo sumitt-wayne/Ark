@@ -2,6 +2,7 @@ mod cli;
 mod core;
 mod git;
 mod security;
+mod ai;
 
 use clap::{Parser, Subcommand};
 use core::repo;
@@ -44,6 +45,11 @@ enum Commands {
         /// Branch name
         name: Option<String>,
     },
+    /// AI powered features
+    Ai {
+        /// Action: setup, commit, review, fix, auto, explain
+        action: String,
+    },
 }
 
 fn main() {
@@ -69,6 +75,9 @@ fn main() {
         }
         Commands::Branch { action, name } => {
             cli::branch::run(&action, name.as_deref());
+        }
+        Commands::Ai { action } => {
+            cli::ai::run(&action);
         }
     }
 }
