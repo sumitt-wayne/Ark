@@ -65,3 +65,7 @@ pub fn get_remote() -> Option<String> {
 pub fn set_remote(url: &str) -> GitResult {
     run(&["remote", "add", "origin", url])
 }
+
+pub fn clone(url: &str, folder: &str) -> GitResult {
+    run(&["clone", url, folder])
+}

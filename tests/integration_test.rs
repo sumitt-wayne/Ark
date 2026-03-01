@@ -259,3 +259,152 @@ fn test_ai_review_without_setup() {
 
     cleanup(&dir);
 }
+
+#[test]
+fn test_diff_no_changes() {
+    let dir = setup("diff_no_changes");
+
+    ark_cmd(&dir, &["start"]);
+    fs::write(format!("{}/test.txt", dir), "hello").unwrap();
+    ark_cmd(&dir, &["save", "first save"]);
+
+    let output = ark_cmd(&dir, &["diff"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("No changes detected"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_diff_with_changes() {
+    let dir = setup("diff_with_changes");
+
+    ark_cmd(&dir, &["start"]);
+    fs::write(format!("{}/test.txt", dir), "hello").unwrap();
+    ark_cmd(&dir, &["save", "first save"]);
+
+    fs::write(format!("{}/new_file.txt", dir), "new content").unwrap();
+
+    let output = ark_cmd(&dir, &["diff"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("new_file.txt"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_merge_branch() {
+    let dir = setup("merge_branch");
+
+    ark_cmd(&dir, &["start"]);
+    fs::write(format!("{}/main.txt", dir), "main content").unwrap();
+    ark_cmd(&dir, &["save", "main first save"]);
+
+    ark_cmd(&dir, &["branch", "new", "feature"]);
+    ark_cmd(&dir, &["branch", "go", "feature"]);
+    fs::write(format!("{}/feature.txt", dir), "feature content").unwrap();
+    ark_cmd(&dir, &["save", "feature save"]);
+
+    ark_cmd(&dir, &["branch", "go", "main"]);
+    let output = ark_cmd(&dir, &["merge", "feature"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("Merge successful"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_merge_nonexistent_branch() {
+    let dir = setup("merge_nonexistent");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["merge", "nonexistent"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("not found"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_tag_create_and_list() {
+    let dir = setup("tag_create");
+
+    ark_cmd(&dir, &["start"]);
+    fs::write(format!("{}/test.txt", dir), "hello").unwrap();
+    ark_cmd(&dir, &["save", "first save"]);
+    ark_cmd(&dir, &["tag", "new", "v1.0", "First release"]);
+
+    let output = ark_cmd(&dir, &["tag", "list"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("v1.0"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_tag_delete() {
+    let dir = setup("tag_delete");
+
+    ark_cmd(&dir, &["start"]);
+    fs::write(format!("{}/test.txt", dir), "hello").unwrap();
+    ark_cmd(&dir, &["save", "first save"]);
+    ark_cmd(&dir, &["tag", "new", "v1.0", "First release"]);
+    ark_cmd(&dir, &["tag", "delete", "v1.0"]);
+
+    let output = ark_cmd(&dir, &["tag", "list"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("No tags found"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_stash_save_and_list() {
+    let dir = setup("stash_save");
+
+    ark_cmd(&dir, &["start"]);
+    fs::write(format!("{}/test.txt", dir), "hello").unwrap();
+    ark_cmd(&dir, &["save", "first save"]);
+    fs::write(format!("{}/test.txt", dir), "changed").unwrap();
+    ark_cmd(&dir, &["stash", "save", "WIP changes"]);
+
+    let output = ark_cmd(&dir, &["stash", "list"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("WIP changes"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_stash_pop() {
+    let dir = setup("stash_pop");
+
+    ark_cmd(&dir, &["start"]);
+    fs::write(format!("{}/test.txt", dir), "hello").unwrap();
+    ark_cmd(&dir, &["save", "first save"]);
+    fs::write(format!("{}/test.txt", dir), "changed").unwrap();
+    ark_cmd(&dir, &["stash", "save", "WIP"]);
+    ark_cmd(&dir, &["stash", "pop"]);
+
+    let output = ark_cmd(&dir, &["stash", "list"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("No stashes found"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_restore_file() {
+    let dir = setup("restore_file");
+
+    ark_cmd(&dir, &["start"]);
+    fs::write(format!("{}/test.txt", dir), "hello").unwrap();
+    ark_cmd(&dir, &["save", "first save"]);
+
+    let output = ark_cmd(&dir, &["restore", "test.txt"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("Restored"));
+
+    cleanup(&dir);
+}

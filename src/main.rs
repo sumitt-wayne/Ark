@@ -40,22 +40,48 @@ enum Commands {
     Info,
     /// Manage branches
     Branch {
-        /// Action: new, go, list, delete
         action: String,
-        /// Branch name
         name: Option<String>,
     },
     /// AI powered features
     Ai {
-        /// Action: setup, commit, review, fix, auto, explain
         action: String,
     },
     /// Manage remote repository
     Remote {
-        /// Action: add, show
         action: String,
-        /// Remote URL
         url: Option<String>,
+    },
+    /// Show changes/diff
+    Diff {
+        commit_id: Option<String>,
+    },
+    /// Merge a branch into current branch
+    Merge {
+        branch: String,
+    },
+    /// Clone a remote repository
+    Clone {
+        url: String,
+        dir: Option<String>,
+    },
+    /// Manage version tags
+    Tag {
+        action: String,
+        name: Option<String>,
+        message: Option<String>,
+    },
+    /// Temporarily save changes
+    Stash {
+        action: String,
+        message: Option<String>,
+    },
+    /// Restore a file from a commit
+    Restore {
+        /// File path to restore
+        file: String,
+        /// Optional commit ID
+        commit_id: Option<String>,
     },
 }
 
@@ -88,6 +114,24 @@ fn main() {
         }
         Commands::Remote { action, url } => {
             cli::remote::run(&action, url.as_deref());
+        }
+        Commands::Diff { commit_id } => {
+            cli::diff::run(commit_id.as_deref());
+        }
+        Commands::Merge { branch } => {
+            cli::merge::run(&branch);
+        }
+        Commands::Clone { url, dir } => {
+            cli::clone::run(&url, dir.as_deref());
+        }
+        Commands::Tag { action, name, message } => {
+            cli::tag::run(&action, name.as_deref(), message.as_deref());
+        }
+        Commands::Stash { action, message } => {
+            cli::stash::run(&action, message.as_deref());
+        }
+        Commands::Restore { file, commit_id } => {
+            cli::restore::run(&file, commit_id.as_deref());
         }
     }
 }
