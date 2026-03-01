@@ -50,6 +50,13 @@ enum Commands {
         /// Action: setup, commit, review, fix, auto, explain
         action: String,
     },
+    /// Manage remote repository
+    Remote {
+        /// Action: add, show
+        action: String,
+        /// Remote URL
+        url: Option<String>,
+    },
 }
 
 fn main() {
@@ -78,6 +85,9 @@ fn main() {
         }
         Commands::Ai { action } => {
             cli::ai::run(&action);
+        }
+        Commands::Remote { action, url } => {
+            cli::remote::run(&action, url.as_deref());
         }
     }
 }

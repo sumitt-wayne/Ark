@@ -1,5 +1,6 @@
 use colored::Colorize;
 use std::io::{self, Write};
+use std::fs;
 use crate::core::{repo, tracker, commit};
 use crate::ai::{groq, config};
 
@@ -36,8 +37,11 @@ fn ai_setup() {
         return;
     }
 
+    // Encrypt before saving
+    let encrypted = config::encrypt_key(&api_key);
+
     let ai_config = config::AiConfig {
-        api_key,
+        api_key: encrypted,
         model: "llama-3.3-70b-versatile".to_string(),
     };
 
@@ -153,13 +157,25 @@ fn ai_fix() {
         return;
     }
 
-    let change_summary: Vec<String> = changes.iter().map(|f| {
-        format!("{:?}: {}", f.status, f.path)
-    }).collect();
+    // Read actual file content for better suggestions
+    let mut file_contents = Vec::new();
+    for f in &changes {
+        if let Ok(content) = fs::read_to_string(&f.path) {
+            let status = match f.status {
+                tracker::Status::New      => "new file",
+                tracker::Status::Modified => "modified",
+                tracker::Status::Deleted  => "deleted",
+                tracker::Status::Unchanged => "unchanged",
+            };
+            // Limit content to 500 chars per file
+            let preview = content.chars().take(500).collect::<String>();
+            file_contents.push(format!("[{}] {}\n```\n{}\n```", status, f.path, preview));
+        }
+    }
 
     let prompt = format!(
-        "Analyze these file changes and suggest potential fixes or improvements:\n{}\n\nBe specific, practical, and concise.",
-        change_summary.join("\n")
+        "Analyze these file changes and suggest specific fixes or improvements:\n{}\n\nBe specific, practical, and concise. Format as numbered list.",
+        file_contents.join("\n\n")
     );
 
     println!("{}", "Analyzing for fixes...".dimmed());
@@ -190,7 +206,6 @@ fn ai_auto() {
     println!("{}", "Running AI auto mode...".dimmed());
     println!();
 
-    // Step 1: Generate commit message
     let change_summary: Vec<String> = changes.iter().map(|f| {
         let status = match f.status {
             tracker::Status::New      => "added",
@@ -208,15 +223,28 @@ fn ai_auto() {
 
     match groq::generate(&prompt) {
         Ok(message) => {
-            println!("{} {}", "✓ Message:".green(), message.cyan());
+            println!("{} {}", "Message:".green().bold(), message.cyan());
+            println!();
 
-            // Step 2: Save
+            // Confirmation step
+            print!("{}", "Save and push? (y/n): ".yellow().bold());
+            io::stdout().flush().unwrap();
+
+            let mut input = String::new();
+            io::stdin().read_line(&mut input).unwrap();
+
+            if input.trim().to_lowercase() != "y" {
+                println!("{}", "Cancelled.".yellow());
+                return;
+            }
+
+            // Save
             let snapshot = tracker::build_snapshot();
             match commit::save_commit(&message, snapshot) {
                 Ok(id) => {
                     println!("{} {}", "✓ Saved:".green(), id.cyan());
 
-                    // Step 3: Sync
+                    // Sync
                     println!("{}", "✓ Syncing...".green());
                     crate::cli::sync::run();
                 }

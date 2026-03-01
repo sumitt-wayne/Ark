@@ -207,3 +207,55 @@ fn test_cannot_delete_main() {
 
     cleanup(&dir);
 }
+
+#[test]
+fn test_remote_show_no_remote() {
+    let dir = setup("remote_no_remote");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["remote", "show"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("No remote configured"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_sync_without_remote() {
+    let dir = setup("sync_no_remote");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["sync"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("No remote configured"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_ai_commit_without_setup() {
+    let dir = setup("ai_no_setup");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["ai", "commit"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("AI not configured"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_ai_review_without_setup() {
+    let dir = setup("ai_review_no_setup");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["ai", "review"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("AI not configured"));
+
+    cleanup(&dir);
+}

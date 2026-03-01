@@ -36,6 +36,9 @@ struct GroqResponse {
 pub fn generate(prompt: &str) -> Result<String, String> {
     let ai_config = config::load_config()?;
 
+    // Decrypt API key before use
+    let api_key = config::decrypt_key(&ai_config.api_key);
+
     let client = Client::new();
 
     let request = GroqRequest {
@@ -56,7 +59,7 @@ pub fn generate(prompt: &str) -> Result<String, String> {
 
     let response = client
         .post(GROQ_URL)
-        .header("Authorization", format!("Bearer {}", ai_config.api_key))
+        .header("Authorization", format!("Bearer {}", api_key))
         .header("Content-Type", "application/json")
         .json(&request)
         .send()

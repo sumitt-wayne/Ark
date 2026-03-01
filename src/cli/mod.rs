@@ -7,3 +7,4 @@ pub mod undo;
 pub mod scan;
 pub mod branch;
 pub mod ai;
+pub mod remote;

@@ -16,6 +16,26 @@ impl Default for AiConfig {
     }
 }
 
+// Simple XOR encryption for API key
+pub fn encrypt_key(key: &str) -> String {
+    let secret: u8 = 0x5A;
+    key.bytes()
+        .map(|b| format!("{:02x}", b ^ secret))
+        .collect::<Vec<_>>()
+        .join("")
+}
+
+pub fn decrypt_key(encrypted: &str) -> String {
+    let secret: u8 = 0x5A;
+    (0..encrypted.len())
+        .step_by(2)
+        .filter_map(|i| {
+            u8::from_str_radix(&encrypted[i..i + 2], 16).ok()
+        })
+        .map(|b| (b ^ secret) as char)
+        .collect()
+}
+
 pub fn save_config(config: &AiConfig) -> Result<(), String> {
     let json = serde_json::to_string_pretty(config)
         .map_err(|e| format!("Failed to serialize AI config: {}", e))?;
