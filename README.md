@@ -24,18 +24,28 @@ ark ai auto
 
 ## Installation
 
-### Requirements
-- Rust (1.70 or higher)
-- Git
+### Linux / Mac
+```bash
+curl -fsSL https://raw.githubusercontent.com/sumitt-wayne/Ark/main/install.sh | sh
+```
 
-### Install from source
+### Windows
+
+Download the binary from [Releases](https://github.com/sumitt-wayne/Ark/releases/tag/v1.0.0).
+
+### Via Cargo
+```bash
+cargo install ark-vcs
+```
+
+### From Source
 ```bash
 git clone https://github.com/sumitt-wayne/Ark.git
 cd Ark
 cargo install --path .
 ```
 
-Verify installation:
+### Verify Installation
 ```bash
 ark --version
 ```
@@ -203,6 +213,13 @@ Ark will detect:
 - Groq AI (llama-3.3-70b-versatile)
 - Clap
 - Serde
+
+---
+
+## Releases
+
+- GitHub Releases: https://github.com/sumitt-wayne/Ark/releases
+- Crates.io: https://crates.io/crates/ark-vcs
 
 ---
 
