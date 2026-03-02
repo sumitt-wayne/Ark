@@ -408,3 +408,58 @@ fn test_restore_file() {
 
     cleanup(&dir);
 }
+
+#[test]
+fn test_branch_rename() {
+    let dir = setup("branch_rename");
+
+    ark_cmd(&dir, &["start"]);
+    ark_cmd(&dir, &["branch", "new", "old-name"]);
+    ark_cmd(&dir, &["branch", "rename", "old-name", "new-name"]);
+
+    let output = ark_cmd(&dir, &["branch", "list"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("new-name"));
+    assert!(!stdout.contains("old-name"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_cannot_rename_main() {
+    let dir = setup("cannot_rename_main");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["branch", "rename", "main", "other"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("Cannot rename"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_ai_diff_without_setup() {
+    let dir = setup("ai_diff_no_setup");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["ai", "diff"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("AI not configured"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_ai_suggest_without_setup() {
+    let dir = setup("ai_suggest_no_setup");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["ai", "suggest"]);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("AI not configured"));
+
+    cleanup(&dir);
+}

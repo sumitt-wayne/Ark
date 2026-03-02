@@ -40,8 +40,12 @@ enum Commands {
     Info,
     /// Manage branches
     Branch {
+        /// Action: new, go, list, delete, rename
         action: String,
+        /// Branch name
         name: Option<String>,
+        /// New name (for rename)
+        new_name: Option<String>,
     },
     /// AI powered features
     Ai {
@@ -78,9 +82,7 @@ enum Commands {
     },
     /// Restore a file from a commit
     Restore {
-        /// File path to restore
         file: String,
-        /// Optional commit ID
         commit_id: Option<String>,
     },
 }
@@ -106,8 +108,8 @@ fn main() {
                 Err(e) => eprintln!("{}", e),
             }
         }
-        Commands::Branch { action, name } => {
-            cli::branch::run(&action, name.as_deref());
+        Commands::Branch { action, name, new_name } => {
+            cli::branch::run(&action, name.as_deref(), new_name.as_deref());
         }
         Commands::Ai { action } => {
             cli::ai::run(&action);
