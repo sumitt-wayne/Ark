@@ -1,5 +1,5 @@
 [package]
-name = "ark"
+name = "ark-vcs"
 version = "1.0.0"
 edition = "2024"
 description = "A simple, fast, and AI-powered version control tool"
