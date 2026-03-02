@@ -1,7 +1,13 @@
 [package]
 name = "ark"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
+description = "A simple, fast, and AI-powered version control tool"
+license = "MIT"
+repository = "https://github.com/sumitt-wayne/Ark"
+keywords = ["version-control", "git", "ai", "cli", "rust"]
+categories = ["command-line-utilities", "development-tools"]
+readme = "README.md"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
