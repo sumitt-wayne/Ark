@@ -11,7 +11,7 @@ use core::repo;
 #[command(
     name = "ark",
     about = "Ark - Simple, secure version control",
-    version = "0.1.0"
+    version = "1.0.0"
 )]
 struct Cli {
     #[command(subcommand)]
@@ -30,8 +30,12 @@ enum Commands {
     Check,
     /// View history
     History,
-    /// Sync with remote
+    /// Sync with remote (pull + push)
     Sync,
+    /// Push changes to GitHub
+    Push,
+    /// Pull changes from GitHub
+    Pull,
     /// Undo last save
     Undo,
     /// Scan for secrets
@@ -40,11 +44,8 @@ enum Commands {
     Info,
     /// Manage branches
     Branch {
-        /// Action: new, go, list, delete, rename
         action: String,
-        /// Branch name
         name: Option<String>,
-        /// New name (for rename)
         new_name: Option<String>,
     },
     /// AI powered features
@@ -96,6 +97,8 @@ fn main() {
         Commands::Check => cli::check::run(),
         Commands::History => cli::history::run(),
         Commands::Sync => cli::sync::run(),
+        Commands::Push => cli::push::run(),
+        Commands::Pull => cli::pull::run(),
         Commands::Undo => cli::undo::run(),
         Commands::Scan => cli::scan::run(),
         Commands::Info => {

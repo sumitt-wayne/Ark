@@ -3,6 +3,8 @@ pub mod save;
 pub mod check;
 pub mod history;
 pub mod sync;
+pub mod push;
+pub mod pull;
 pub mod undo;
 pub mod scan;
 pub mod branch;

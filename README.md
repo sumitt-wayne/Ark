@@ -1,74 +1,54 @@
 # Ark
 
-A simple, fast, and AI-powered version control tool built with Rust.
-
-Ark makes version control easy for everyone — from beginners to experienced developers.
+Simple, fast, and AI-powered version control.
 
 ---
 
-## Why Ark?
+## Install
 
-Git is powerful but complex. Ark simplifies the workflow without losing any power.
-```
-# Git way
-git add .
-git status
-git commit -m "think of a message..."
-git push origin main
-
-# Ark way
-ark ai auto
-```
-
----
-
-## Installation
-
-### Linux / Mac
+**Linux / Mac**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/sumitt-wayne/Ark/main/install.sh | sh
 ```
 
-### Windows
-
-Download the binary from [Releases](https://github.com/sumitt-wayne/Ark/releases/tag/v1.0.0).
-
-### Via Cargo
+**Via Cargo**
 ```bash
 cargo install ark-vcs
 ```
 
-### From Source
-```bash
-git clone https://github.com/sumitt-wayne/Ark.git
-cd Ark
-cargo install --path .
-```
-
-### Verify Installation
-```bash
-ark --version
-```
+**Windows** — Download binary from [Releases](https://github.com/sumitt-wayne/Ark/releases)
 
 ---
 
 ## Quick Start
 ```bash
-# Start tracking your project
+# 1. Start tracking your project
 ark start
 
-# Check what changed
+# 2. Check what changed
 ark check
 
-# Save your changes
+# 3. Save your changes
 ark save "your message"
 
-# View history
-ark history
-
-# Push to GitHub
-ark sync
+# 4. Push to GitHub
+ark push
 ```
+
+That's it. Four commands and your code is on GitHub.
+
+---
+
+## With AI (Recommended)
+```bash
+# Setup AI once
+ark ai setup
+
+# Then just run one command
+ark ai auto
+```
+
+One command. AI generates the message, saves, and pushes to GitHub.
 
 ---
 
@@ -78,14 +58,24 @@ ark sync
 
 | Command | Description |
 |---|---|
-| `ark start` | Initialize a new Ark repository |
-| `ark save "message"` | Save your changes with a message |
-| `ark check` | See what files changed |
-| `ark history` | View commit history |
+| `ark start` | Start tracking your project |
+| `ark save "message"` | Save your changes |
+| `ark check` | See what changed |
+| `ark history` | View save history |
 | `ark undo` | Undo last save |
 | `ark info` | Show project info |
-| `ark sync` | Push and pull from remote |
 | `ark scan` | Scan for secrets and API keys |
+
+### GitHub
+
+| Command | Description |
+|---|---|
+| `ark push` | Push changes to GitHub |
+| `ark pull` | Pull changes from GitHub |
+| `ark sync` | Pull and push together |
+| `ark remote add <url>` | Add GitHub remote |
+| `ark remote show` | Show current remote |
+| `ark clone <url>` | Clone a repository |
 
 ### Branches
 
@@ -96,141 +86,109 @@ ark sync
 | `ark branch list` | List all branches |
 | `ark branch delete <name>` | Delete a branch |
 | `ark branch rename <old> <new>` | Rename a branch |
-| `ark merge <branch>` | Merge a branch into current |
+| `ark merge <branch>` | Merge a branch |
 
 ### AI Features
 
 | Command | Description |
 |---|---|
-| `ark ai setup` | Configure your Groq API key |
-| `ark ai commit` | Generate a smart commit message |
-| `ark ai review` | Get a code review of your changes |
-| `ark ai fix` | Get fix suggestions for your code |
-| `ark ai auto` | Auto generate message, save and push |
-| `ark ai explain` | Explain recent project history |
-| `ark ai diff` | Explain your current changes |
-| `ark ai suggest` | Get suggestions for next steps |
+| `ark ai setup` | Configure Groq API key |
+| `ark ai auto` | Auto save and push with AI message |
+| `ark ai commit` | Generate smart commit message |
+| `ark ai review` | Review your changes |
+| `ark ai fix` | Get fix suggestions |
+| `ark ai diff` | Explain your changes |
+| `ark ai suggest` | Get next step suggestions |
+| `ark ai explain` | Explain project history |
 
 ### Other
 
 | Command | Description |
 |---|---|
 | `ark diff` | Show current changes |
-| `ark diff <commit-id>` | Show files in a specific commit |
-| `ark remote add <url>` | Add a remote repository |
-| `ark remote show` | Show current remote |
-| `ark clone <url>` | Clone a repository |
-| `ark tag new <name> "message"` | Create a version tag |
+| `ark diff <id>` | Show files in a commit |
+| `ark tag new <name>` | Create a version tag |
 | `ark tag list` | List all tags |
 | `ark tag delete <name>` | Delete a tag |
-| `ark stash save "message"` | Temporarily save changes |
-| `ark stash list` | List all stashes |
-| `ark stash pop` | Restore last stashed changes |
-| `ark stash drop` | Delete last stash |
-| `ark restore <file>` | Restore a file from last commit |
+| `ark stash save` | Temporarily save changes |
+| `ark stash pop` | Restore stashed changes |
+| `ark restore <file>` | Restore a file from last save |
 
 ---
 
 ## AI Setup
 
-Ark uses Groq for AI features. Groq is completely free — no credit card needed.
-
-### Steps
+Groq is free — no credit card needed.
 
 1. Go to console.groq.com
-2. Sign up with Google (takes 2 minutes)
-3. Go to API Keys section
-4. Click "Create API Key"
-5. Copy your key
-6. Run:
-```bash
-ark ai setup
-```
+2. Sign up with Google
+3. Create an API key
+4. Run `ark ai setup` and paste your key
 
-Paste your key when prompted. Done.
-
-Your API key is stored encrypted on your machine. It never leaves your computer.
+Your key is stored encrypted on your machine.
 
 ---
 
-## Typical Workflow
+## Typical Workflows
 
-### Without AI
+### New project
 ```bash
 ark start
 ark remote add https://github.com/username/repo.git
+ark save "first commit"
+ark push
+```
+
+### Daily workflow without AI
+```bash
 ark check
 ark save "feat: add login page"
-ark sync
+ark push
 ```
 
-### With AI (Recommended)
+### Daily workflow with AI
 ```bash
-ark start
-ark remote add https://github.com/username/repo.git
-ark ai setup
-
-# make your changes...
-
 ark ai auto
-# message generated, saved, and pushed in one command
 ```
 
-### With Branches
+### Working with branches
 ```bash
-ark branch new feature-login
-ark branch go feature-login
-
-# make your changes...
-
-ark ai commit
+ark branch new feature
+ark branch go feature
+ark save "feat: new feature"
 ark branch go main
-ark merge feature-login
-ark sync
+ark merge feature
+ark push
 ```
 
 ---
 
 ## Security
-
-Ark has built-in secret scanning. Before pushing sensitive projects, run:
 ```bash
 ark scan
 ```
 
-Ark will detect:
-- API keys
-- Passwords
-- AWS credentials
-- Private keys
-- Database URLs
+Detects API keys, passwords, AWS credentials, private keys, and database URLs before you push.
 
 ---
 
 ## Built With
 
 - Rust
-- Groq AI (llama-3.3-70b-versatile)
+- Groq AI
 - Clap
 - Serde
 
 ---
 
-## Releases
+## Links
 
-- GitHub Releases: https://github.com/sumitt-wayne/Ark/releases
+- GitHub: https://github.com/sumitt-wayne/Ark
 - Crates.io: https://crates.io/crates/ark-vcs
+- Releases: https://github.com/sumitt-wayne/Ark/releases
 
 ---
 
 ## License
 
-MIT License. Free to use, modify, and distribute.
-
----
-
-## Contributing
-
-Contributions are welcome. Open an issue or submit a pull request.
-
-GitHub: https://github.com/sumitt-wayne/Ark
+MIT — Free to use, modify, and distribute.

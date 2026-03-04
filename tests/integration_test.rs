@@ -463,3 +463,29 @@ fn test_ai_suggest_without_setup() {
 
     cleanup(&dir);
 }
+
+#[test]
+fn test_push_without_remote() {
+    let dir = setup("push_no_remote");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["push"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("No remote configured"));
+
+    cleanup(&dir);
+}
+
+#[test]
+fn test_pull_without_remote() {
+    let dir = setup("pull_no_remote");
+
+    ark_cmd(&dir, &["start"]);
+
+    let output = ark_cmd(&dir, &["pull"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("No remote configured"));
+
+    cleanup(&dir);
+}

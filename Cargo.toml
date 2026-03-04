@@ -16,3 +16,7 @@ serde_json = "1"
 chrono = "0.4"
 colored = "2"
 reqwest = { version = "0.12", features = ["blocking", "json"] }
+
+[[bin]]
+name = "ark"
+path = "src/main.rs"

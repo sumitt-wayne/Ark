@@ -9,24 +9,17 @@ pub fn run() {
     }
 
     if !git_wrapper::is_git_repo() {
-        println!("{}", "Initializing Git backend...".dimmed());
         let result = git_wrapper::init();
         if !result.success {
             eprintln!("{} {}", "Error:".red().bold(), result.output);
             return;
         }
-        println!("{}", "✓ Git initialized.".green());
     }
 
-    // Check remote
     match git_wrapper::get_remote() {
         None => {
             println!("{}", "No remote configured.".yellow().bold());
-            println!("{}", "Add a remote first:".dimmed());
             println!("  ark remote add <your-github-url>");
-            println!();
-            println!("{}", "Example:".dimmed());
-            println!("  ark remote add https://github.com/username/repo.git");
             return;
         }
         Some(remote) => {
@@ -34,39 +27,23 @@ pub fn run() {
         }
     }
 
-    // Pull
-    println!("{}", "Pulling latest changes...".dimmed());
-    let pull = git_wrapper::pull();
-    if pull.success {
-        println!("{}", "✓ Pull successful.".green());
-    } else {
-        println!("{} {}", "⚠ Pull warning:".yellow(), pull.output.dimmed());
-    }
-
-    // Stage
     println!("{}", "Staging changes...".dimmed());
-    let add = git_wrapper::add_all();
-    if !add.success {
-        eprintln!("{} {}", "Error staging files:".red().bold(), add.output);
-        return;
-    }
+    git_wrapper::add_all();
 
-    // Commit
     println!("{}", "Committing changes...".dimmed());
-    let commit = git_wrapper::commit("ark sync");
+    let commit = git_wrapper::commit("ark push");
     if !commit.success {
         if commit.output.contains("nothing to commit") {
             println!("{}", "✓ Nothing new to commit.".green());
         } else {
-            eprintln!("{} {}", "Error committing:".red().bold(), commit.output);
+            eprintln!("{} {}", "Error:".red().bold(), commit.output);
             return;
         }
     } else {
         println!("{}", "✓ Changes committed.".green());
     }
 
-    // Push with upstream set
-    println!("{}", "Pushing to remote...".dimmed());
+    println!("{}", "Pushing to GitHub...".dimmed());
     let push = git_wrapper::push();
     if push.success {
         println!("{}", "✓ Pushed successfully!".green().bold());
